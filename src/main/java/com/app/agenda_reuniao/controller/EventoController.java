@@ -1,85 +1,84 @@
 package com.app.agenda_reuniao.controller;
 
-import java.util.List;
-
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.app.agenda_reuniao.models.EventoModel;
 import com.app.agenda_reuniao.service.EventoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import java.util.List;
 
-@Controller
+@RestController // Usando @RestController para uma API RESTful
+@RequestMapping("/agendar") // Definindo um prefixo comum para todas as rotas
 public class EventoController {
-	
-	@Autowired
-	EventoService eventoService;
 
-	@RequestMapping(value = "/agendar", method = RequestMethod.GET)
-	public ModelAndView getEventos() {
-		ModelAndView mv = new ModelAndView("agendareuniao"); /*Nome da Pagina html*/
+	@Autowired
+	private EventoService eventoService;
+
+	// Endpoint para listar todos os eventos
+	@GetMapping
+	public ResponseEntity<List<EventoModel>> getEventos() {
 		List<EventoModel> eventos = eventoService.findAll();
-		mv.addObject("eventos", eventos);
-		return mv;
+		return new ResponseEntity<>(eventos, HttpStatus.OK); // Retorna os eventos em formato JSON com status 200 OK
 	}
-	
-	@RequestMapping(value = "/agendar/{id}", method = RequestMethod.GET)
-	public ModelAndView getEventoDetails(@PathVariable("id") Long id) {
-		ModelAndView mv = new ModelAndView("reservaDetalhes"); /*Nome da Pagina html*/
+
+	// Endpoint para buscar detalhes de um evento pelo ID
+	@GetMapping("/{id}")
+	public ResponseEntity<EventoModel> getEventoDetails(@PathVariable("id") Long id) {
 		EventoModel evento = eventoService.findById(id);
-		mv.addObject("evento", evento);
-		return mv;
-	} 
-	
-	@RequestMapping(value = "/agendar{id}", method = RequestMethod.GET)
-	public ModelAndView editEvento(@PathVariable("id") Long id) {
-		ModelAndView mv = new ModelAndView("editForm"); /*Nome da Pagina html*/
-		EventoModel evento = eventoService.findById(id);
-		mv.addObject("evento", evento);
-		return mv;
+		if (evento != null) {
+			return new ResponseEntity<>(evento, HttpStatus.OK); // Retorna o evento em formato JSON
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 caso o evento não seja encontrado
+		}
 	}
-	
-	@RequestMapping(value = "/agendar{id}", method = RequestMethod.POST)
-	public String update(@Valid EventoModel evento, BindingResult result, RedirectAttributes attributes) {
-		if(result.hasErrors()) {
-	 		 attributes.addFlashAttribute("mensagem", "Verifique se os campos obrigatórios foram preenchidos!");
-	 		 return "redirect:/newReserva";
-	 	 }	
+
+	// Endpoint para editar um evento (GET para carregar o evento para edição)
+	@GetMapping("/edit/{id}")
+	public ResponseEntity<EventoModel> editEvento(@PathVariable("id") Long id) {
+		EventoModel evento = eventoService.findById(id);
+		if (evento != null) {
+			return new ResponseEntity<>(evento, HttpStatus.OK); // Retorna o evento em formato JSON
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 caso o evento não seja encontrado
+		}
+	}
+
+	// Endpoint para atualizar um evento
+	@PostMapping("/{id}")
+	public ResponseEntity<String> update(@PathVariable("id") Long id, @Validated @RequestBody EventoModel evento, BindingResult result) {
+		if (result.hasErrors()) {
+			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST); // Retorna erro 400 se houver problemas de validação
+		}
+
+		evento.setId(id); // Certifique-se de que o ID do evento está sendo atualizado corretamente
 		eventoService.save(evento);
-		return "redirect:/agendar";
+		return new ResponseEntity<>("Evento atualizado com sucesso!", HttpStatus.OK); // Retorna sucesso
 	}
-	
-	@RequestMapping("/deletar")
-	public String deletarEvento( Long id) {
+
+	// Endpoint para deletar um evento
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deletarEvento(@PathVariable("id") Long id) {
 		EventoModel evento = eventoService.findById(id);
-		eventoService.deletarEvento(evento);
-		
-		return "redirect:/agendar";
+		if (evento != null) {
+			eventoService.deletarEvento(evento);
+			return new ResponseEntity<>("Evento deletado com sucesso!", HttpStatus.OK); // Retorna sucesso
+		} else {
+			return new ResponseEntity<>("Evento não encontrado!", HttpStatus.NOT_FOUND); // Retorna erro 404 caso o evento não exista
+		}
 	}
-	
-		
-	@RequestMapping(value = "/newReserva", method = RequestMethod.GET)
-	public String form() {
-		
-		return "reservaForm";
-	}
-	
-	@RequestMapping(value = "/newReserva", method = RequestMethod.POST)
-	public String save(@Valid EventoModel evento, BindingResult result, RedirectAttributes attributes) {
-		if(result.hasErrors()) {
-	 		 attributes.addFlashAttribute("mensagem", "Verifique se os campos obrigatórios foram preenchidos!");
-	 		 return "redirect:/newReserva";
-	 	 }	
+
+	// Endpoint para criar um novo evento
+	@PostMapping("/new")
+	public ResponseEntity<String> save(@Validated @RequestBody EventoModel evento, BindingResult result) {
+		if (result.hasErrors()) {
+			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST); // Retorna erro 400
+		}
+
 		eventoService.save(evento);
-		return "redirect:/agendar";
+		return new ResponseEntity<>("Evento criado com sucesso!", HttpStatus.CREATED); // Retorna sucesso com código 201
 	}
 }
