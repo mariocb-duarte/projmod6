@@ -21,7 +21,7 @@ public class DummyData {
 	@Autowired
     EventoRepository eventoRepository;
 
-    //@PostConstruct
+    @PostConstruct
     public void saveEvento(){
 
         List<EventoModel> eventoList = new ArrayList<>();
