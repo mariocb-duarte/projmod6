@@ -90,11 +90,7 @@ public class EventoModel implements Serializable{
 				+ horaInicial + ", horaFinal=" + horaFinal + "]";
 	}
 	
-	
-	
-	
-	
-	
+
 	
 
 }
