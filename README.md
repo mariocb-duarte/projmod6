@@ -23,18 +23,30 @@ Este projeto tem como objetivo criar testes automatizados para uma API REST, uti
 ## Estrutura do Projeto
 
 ```
-src
-├── main
-│   └── java
-│       └── br.com.suapackage
-│           └── api
-│               ├── controllers
-│               ├── services
-│               └── models
-└── test
-    ├── unit
-    ├── integration
-    └── e2e
+projmod6  
+|_mvn  
+  |_wrapper  
+    |_maven-wrappen.jar  
+    |_maven-wrapper.properties  
+|_GitHub  
+    |_workflows  
+    |_github-actions-demo.yml  
+|_src  
+    |_main  
+      |_java  
+      | |_com  
+      |    |_app  
+      |     |_agenda reunião  
+      |        |_Controller  
+      |        |_models  
+      |        |_repositor  
+      |        |_servisse  
+      |        |_serviceImpl  
+      |        |_utils  
+      |        |_AgendaReuniãoApplication.java    
+      |_resources  
+           |_ AgendaReuniaoApplicationTests.java
+
 ```
 
 
