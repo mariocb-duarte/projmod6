@@ -61,10 +61,7 @@ projmod6
 2.  **Configuração do Wiremock**:
     
     -   Inicie o Wiremock no ambiente local:
-        
-        bash
-        
-        Copiar código
+   
         
         `java -jar wiremock-standalone-x.x.x.jar --port 8089` 
         
