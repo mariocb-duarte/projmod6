@@ -1,0 +1,43 @@
+# Configurações comuns para todos os ambientes
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Criação ou atualização automática do esquema no H2
+    properties:
+      hibernate:
+        jdbc.lob.non_contextual_creation: true
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: true # Exibe SQL no log para desenvolvimento
+    properties.hibernate.format_sql: true
+
+# Configuração para o ambiente de desenvolvimento
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Criação ou atualização automática do esquema no H2
+    properties:
+      hibernate:
+        jdbc.lob.non_contextual_creation: true
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: true # Exibe SQL no log para desenvolvimento
+    properties.hibernate.format_sql: true

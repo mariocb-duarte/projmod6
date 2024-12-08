@@ -11,18 +11,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // Usando @RestController para uma API RESTful
-@RequestMapping("/agendar") // Definindo um prefixo comum para todas as rotas
+@RestController
+@RequestMapping("/agendar")
 public class EventoController {
 
+	private final EventoService eventoService;
+
+	// Injeção via construtor
 	@Autowired
-	private EventoService eventoService;
+	public EventoController(EventoService eventoService) {
+		this.eventoService = eventoService;
+	}
 
 	// Endpoint para listar todos os eventos
 	@GetMapping
 	public ResponseEntity<List<EventoModel>> getEventos() {
 		List<EventoModel> eventos = eventoService.findAll();
-		return new ResponseEntity<>(eventos, HttpStatus.OK); // Retorna os eventos em formato JSON com status 200 OK
+		return new ResponseEntity<>(eventos, HttpStatus.OK);
 	}
 
 	// Endpoint para buscar detalhes de um evento pelo ID
@@ -30,20 +35,20 @@ public class EventoController {
 	public ResponseEntity<EventoModel> getEventoDetails(@PathVariable("id") Long id) {
 		EventoModel evento = eventoService.findById(id);
 		if (evento != null) {
-			return new ResponseEntity<>(evento, HttpStatus.OK); // Retorna o evento em formato JSON
+			return new ResponseEntity<>(evento, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 caso o evento não seja encontrado
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
-	// Endpoint para editar um evento (GET para carregar o evento para edição)
+	// Endpoint para editar um evento
 	@GetMapping("/edit/{id}")
 	public ResponseEntity<EventoModel> editEvento(@PathVariable("id") Long id) {
 		EventoModel evento = eventoService.findById(id);
 		if (evento != null) {
-			return new ResponseEntity<>(evento, HttpStatus.OK); // Retorna o evento em formato JSON
+			return new ResponseEntity<>(evento, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Retorna 404 caso o evento não seja encontrado
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -51,12 +56,12 @@ public class EventoController {
 	@PostMapping("/{id}")
 	public ResponseEntity<String> update(@PathVariable("id") Long id, @Validated @RequestBody EventoModel evento, BindingResult result) {
 		if (result.hasErrors()) {
-			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST); // Retorna erro 400 se houver problemas de validação
+			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST);
 		}
 
-		evento.setId(id); // Certifique-se de que o ID do evento está sendo atualizado corretamente
+		evento.setId(id);
 		eventoService.save(evento);
-		return new ResponseEntity<>("Evento atualizado com sucesso!", HttpStatus.OK); // Retorna sucesso
+		return new ResponseEntity<>("Evento atualizado com sucesso!", HttpStatus.OK);
 	}
 
 	// Endpoint para deletar um evento
@@ -65,9 +70,9 @@ public class EventoController {
 		EventoModel evento = eventoService.findById(id);
 		if (evento != null) {
 			eventoService.deletarEvento(evento);
-			return new ResponseEntity<>("Evento deletado com sucesso!", HttpStatus.OK); // Retorna sucesso
+			return new ResponseEntity<>("Evento deletado com sucesso!", HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("Evento não encontrado!", HttpStatus.NOT_FOUND); // Retorna erro 404 caso o evento não exista
+			return new ResponseEntity<>("Evento não encontrado!", HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -75,10 +80,11 @@ public class EventoController {
 	@PostMapping("/new")
 	public ResponseEntity<String> save(@Validated @RequestBody EventoModel evento, BindingResult result) {
 		if (result.hasErrors()) {
-			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST); // Retorna erro 400
+			return new ResponseEntity<>("Verifique se os campos obrigatórios foram preenchidos!", HttpStatus.BAD_REQUEST);
 		}
 
 		eventoService.save(evento);
-		return new ResponseEntity<>("Evento criado com sucesso!", HttpStatus.CREATED); // Retorna sucesso com código 201
+		return new ResponseEntity<>("Evento criado com sucesso!", HttpStatus.CREATED);
 	}
 }
+
