@@ -57,6 +57,8 @@ projmod6
     
     -   Java 17 ou superior instalado.
     -   Maven/Gradle configurado.
+    -   Spring boot.
+    -   JDK configurada.
     -   Um ambiente local para simular as chamadas (como Docker, se necessário).
 2.  **Configuração do Wiremock**:
     
@@ -72,7 +74,12 @@ projmod6
     -   Execute o comando para rodar os testes:
       
         
-        `mvn test -Dtest=RunCucumberTest` 
+        `mvn test` ou 
+        `mvn clean verify` --> para rodar todos os testes
+        
+        `mvn -Dtest=EventoControllerTesteUnitario test`  -->test unitário
+        `mvn -Dtest=EventoControllerTesteDeIntegracao test` --> test de integração
+        `mvn -Dtest=EventoControllerTesteEndToEnd test` --> test end to end
         
 
 ----------
