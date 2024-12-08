@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-class EventoControllerUnitTest {
+class EventoControllerTesteUnitario {
 
     private final EventoService eventoService = mock(EventoService.class);
     private final EventoController eventoController = new EventoController(eventoService);
